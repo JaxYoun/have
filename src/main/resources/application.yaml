@@ -1,10 +1,14 @@
 #应用全局
 server:
-  context-path: have
+  context-path: /have
   port: 9999
+
+#部署环境迁移
+
 
 #thymefeaf
 spring:
+  #thymefeaf
   thymeleaf:
     enabled: false
     mode: HTML5
@@ -12,7 +16,18 @@ spring:
     content-type: text/html
     prefix: classpath:/templates/
     suffix: .html
-    cache: true
+    cache: false
+#   encoding: utf-8
+  datasource:
+    url: jdbc:mysql://localhost:3306/spring_boot_db?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: mysql
+    driver-class-name: com.mysql.jdbc.Driver
+
+  #部署环境选项
+#  profiles:
+#    active:
+
 
 #访问认证
 security:
@@ -44,3 +59,6 @@ my:
   config:
     name: yang
     id: 75
+logging:
+  level: warn
+  path: D:\\spring-boot-log
