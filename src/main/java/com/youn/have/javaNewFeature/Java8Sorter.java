@@ -1,6 +1,9 @@
 package com.youn.have.javaNewFeature;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * 比较Java8和Java7在一个排序程序中的语法差别
@@ -12,6 +15,7 @@ public class Java8Sorter {
 
     /**
      * Java7排序方法
+     *
      * @param list
      */
     public static void sortInJava7(List<String> list) {
@@ -25,6 +29,7 @@ public class Java8Sorter {
 
     /**
      * Java8排序方法
+     *
      * @param list
      */
     public static void sortInJava8(List<String> list) {

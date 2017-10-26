@@ -4,50 +4,35 @@ public class LambdaTest {
 
     public static final String hi = "hello\t";
     public static String constan = "yangjx";
-
-    /**
-     * 数学运算接口
-     */
-    @FunctionalInterface
-    interface MathOperation {
-        int operation (int a, int b);
-    }
-
     /**
      * 参数类型声明
      * 对于独句函数，可以不用大括号，默认返回独句
      */
     static MathOperation addition = (int a, int b) -> a + b;
-
     /**
      * 数类无型声明
      * 对于独句函数，可以不用大括号，默认返回独句
      */
-    static MathOperation subtraction = (a , b) -> a - b;
-
+    static MathOperation subtraction = (a, b) -> a - b;
     /**
      * 当函数体使用大括号时，必须return
      */
     static MathOperation multiplication = (a, b) -> {
         return a * b;
     };
-
     /**
      * 数类无型声明
      * 对于独句函数，可以不用大括号，默认返回独句
      */
     static MathOperation division = (int a, int b) -> a / b;
-
     /**
-     * 运算函数
-     * @param a
-     * @param b
-     * @param mathOperation
-     * @return
+     * 单个参数可以不用小括号
      */
-    private static int operate(int a, int b, MathOperation mathOperation){
-        return mathOperation.operation(a, b);
-    }
+    static GreetingService greetService1 = message -> System.out.println(hi + message);
+    /**
+     * 单个参数也可以用小括号
+     */
+    static GreetingService greetService2 = (message) -> System.out.println(hi + message);
 
 //-------------------------------------------------------------------------
     /**
@@ -61,22 +46,16 @@ public class LambdaTest {
      */
 
     /**
-     * 消息服务接口
+     * 运算函数
+     *
+     * @param a
+     * @param b
+     * @param mathOperation
+     * @return
      */
-    @FunctionalInterface
-    interface GreetingService {
-        void sayMessage(String message);
+    private static int operate(int a, int b, MathOperation mathOperation) {
+        return mathOperation.operation(a, b);
     }
-
-    /**
-     * 单个参数可以不用小括号
-     */
-    static GreetingService greetService1 = message -> System.out.println(hi + message);
-
-    /**
-     * 单个参数也可以用小括号
-     */
-    static GreetingService greetService2 = (message) -> System.out.println(hi + message);
 
     public static void main(String[] args) {
         System.out.println("10 + 5 = " + operate(10, 5, addition));
@@ -88,6 +67,22 @@ public class LambdaTest {
         greetService2.sayMessage("Google");
 
         greetService2.sayMessage(constan);
+    }
+
+    /**
+     * 数学运算接口
+     */
+    @FunctionalInterface
+    interface MathOperation {
+        int operation(int a, int b);
+    }
+
+    /**
+     * 消息服务接口
+     */
+    @FunctionalInterface
+    interface GreetingService {
+        void sayMessage(String message);
     }
 
 }

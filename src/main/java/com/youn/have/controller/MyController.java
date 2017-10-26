@@ -13,7 +13,7 @@ public class MyController {
     private int threadPoolSize;
 
     @RequestMapping(value = "/bar")
-    public int bar(){
+    public int bar() {
         MyConfig myConfig = new MyConfig();
         myConfig.getId();
         return threadPoolSize;

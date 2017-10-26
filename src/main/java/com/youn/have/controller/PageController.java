@@ -17,20 +17,20 @@ public class PageController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @RequestMapping ("/toIndex")
-    public String toIndex(){
+    @RequestMapping("/toIndex")
+    public String toIndex() {
         System.out.println("------");
         return "page/index";
     }
 
-    @RequestMapping ("/go")
-    public String go(){
+    @RequestMapping("/go")
+    public String go() {
         System.out.println("++++++++");
         return "welcome";
     }
 
-    @RequestMapping ("/wel")
-    public ModelAndView wel(ModelAndView modelAndView){
+    @RequestMapping("/wel")
+    public ModelAndView wel(ModelAndView modelAndView) {
         modelAndView.setViewName("welcome");
         modelAndView.getModelMap().put("hello", "Hi");
         logger.warn("welcome");
@@ -38,7 +38,7 @@ public class PageController {
         return modelAndView;
     }
 
-    @RequestMapping ("/getUser")
+    @RequestMapping("/getUser")
     public void getUser() {
         System.out.println(jdbcTemplate.queryForList("SELECT * FROM t_user").size());
     }

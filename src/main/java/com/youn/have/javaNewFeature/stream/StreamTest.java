@@ -15,13 +15,13 @@ import java.util.stream.Collectors;
  */
 public class StreamTest {
 
-    public static final List<Integer> list =Arrays.asList(2, 4 , 5, 8, 9);
+    public static final List<Integer> list = Arrays.asList(2, 4, 5, 8, 9);
 
     /**
      * 从结合构造串行流
      */
     public static void linerStream() {
-        list.stream().filter( it -> it > 5 ).collect( Collectors.toList() ).forEach(System.out :: println);
+        list.stream().filter(it -> it > 5).collect(Collectors.toList()).forEach(System.out::println);
     }
 
     /**
@@ -36,7 +36,7 @@ public class StreamTest {
      * 用foreach方法遍历集合
      */
     public static void forEach() {
-        list.forEach(System.out :: println);
+        list.forEach(System.out::println);
     }
 
     /**
@@ -45,7 +45,7 @@ public class StreamTest {
     public static void mapStream() {
         list.stream()
                 .map(it -> it * it)
-                .forEach(System.err :: println);
+                .forEach(System.err::println);
     }
 
     /**
@@ -53,8 +53,8 @@ public class StreamTest {
      */
     public static void streamFilter() {
         list.stream()
-                .filter( it -> it > 5 )
-                .forEach(System.err :: print);
+                .filter(it -> it > 5)
+                .forEach(System.err::print);
     }
 
     /**
@@ -62,7 +62,7 @@ public class StreamTest {
      */
     public static void streamLimit() {
         Random random = new Random();
-        random.ints().limit(10).forEach(System.out :: println);
+        random.ints().limit(10).forEach(System.out::println);
     }
 
     /**
@@ -72,14 +72,14 @@ public class StreamTest {
         /*Random random = new Random();
         random.ints().limit(10).sorted().forEach(System.out::println);*/
         List<String> stringList = Arrays.asList("google", "yahoo", "baidu", "alibaba");
-        stringList.stream().sorted().forEach(System.out :: println);
+        stringList.stream().sorted().forEach(System.out::println);
     }
 
     /**
      * Stream之collectors方法
      */
     public static void streamCollectors() {
-        List<String>strings = Arrays.asList("abc", "", "bc", "efg", "abcd","", "jkl");
+        List<String> strings = Arrays.asList("abc", "", "bc", "efg", "abcd", "", "jkl");
 
         List<String> filtered = strings.stream()
                 .filter(string -> !string.isEmpty())

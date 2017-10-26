@@ -11,11 +11,12 @@ public class FunctionalInterfaceTest {
     /**
      * 定义一个方法，其参数包含一个Predicate型函数式接口，
      * 具体使用时，需传递一个实现了该函数是接口的对象
+     *
      * @param predicate
      */
     public static void eval(List<Integer> list, Predicate<Integer> predicate) {
         list.forEach(it -> {
-            if(predicate.test(it)) {
+            if (predicate.test(it)) {
                 System.out.println(it);
             }
         });
