@@ -1,6 +1,6 @@
 package com.youn.have.controller;
 
-import com.youn.have.entity.MyConfig;
+import com.youn.have.entity.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +14,7 @@ public class MyController {
 
     @RequestMapping(value = "/bar")
     public int bar() {
-        MyConfig myConfig = new MyConfig();
+        User myConfig = new User();
         myConfig.getId();
         return threadPoolSize;
     }

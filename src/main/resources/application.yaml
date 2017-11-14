@@ -5,7 +5,6 @@ server:
 
 #部署环境迁移
 
-
 #thymefeaf
 spring:
   #thymefeaf
@@ -19,19 +18,47 @@ spring:
     cache: false
 #   encoding: utf-8
   datasource:
+    driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/spring_boot_db?useUnicode=true&characterEncoding=utf-8
     username: root
     password: mysql
-    driver-class-name: com.mysql.jdbc.Driver
   profiles:
-    active: prod
+    active: devl
+  jpa:
+    database: mysql
+    show-sql: true
+    format: true
+    hibernate:
+      ddl-auto: update
+      naming:
+        strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+        hbm2dll: create-drop
+  aop:
+    auto: true
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    pool:
+      max-active: 8
+      max-idle: 8
+      max-wait: 1000
+      min-idle: 3
+
+#        id.new_generator_mappings: true
+#        generate_statistics: true
+#    generate-ddl: true
+
+
 
   #部署环境选项
 #  profiles:
 #    active:
 
 
-#访问认证
+#原生spring-boot基本访问认证
 security:
   user:
     name: 1
@@ -57,11 +84,15 @@ thread:
     size: 6
 
 #自定义配置
-my:
-  config:
-    name: yang
-    id: 75
+#my:
+#  config:
+#    name: yang
+#    id: 75
 
 logging:
   level: warn
+  config: classpath:logback.xml
   path: D:\\spring-boot-log
+
+debug:
+  false
