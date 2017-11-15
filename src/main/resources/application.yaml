@@ -22,8 +22,15 @@ spring:
     url: jdbc:mysql://localhost:3306/spring_boot_db?useUnicode=true&characterEncoding=utf-8
     username: root
     password: mysql
+    hikari:
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+
   profiles:
-    active: devl
+    active: dev
   jpa:
     database: mysql
     show-sql: true
@@ -41,11 +48,13 @@ spring:
   redis:
     host: 127.0.0.1
     port: 6379
+    password: redis
     pool:
       max-active: 8
       max-idle: 8
       max-wait: 1000
       min-idle: 3
+
 
 #        id.new_generator_mappings: true
 #        generate_statistics: true
@@ -91,7 +100,7 @@ thread:
 
 logging:
   level: warn
-  config: classpath:logback.xml
+#  config: classpath:logback.xml
   path: D:\\spring-boot-log
 
 debug:

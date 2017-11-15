@@ -1,23 +1,26 @@
 package com.youn.have.controller;
 
 import com.youn.have.annotation.DataGroup;
+import com.youn.have.dto.PhoneDTO;
 import com.youn.have.dto.UserDTO;
 import com.youn.have.entity.Employee;
 import com.youn.have.entity.Phone;
 import com.youn.have.entity.User;
 import com.youn.have.service.IUserService;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import javax.validation.Valid;
+import java.util.*;
 
+@Validated
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -93,4 +96,30 @@ public class UserController {
         Arrays.stream(arr).forEach(System.out::println);
     }
 
+    /**
+     *
+     * @param date
+     */
+    @PostMapping(value = "/getDateFromFront", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public void getDateFromFront(
+            @RequestParam(name = "time", required = true, defaultValue = "2017-11-3 8:59:11")
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date date) {
+
+        System.out.println(date);
+    }
+
+    /**
+     * 
+     * @param age
+     * @param userDTO
+     * @param phoneDTO
+     */
+    @PostMapping("/validTest")
+    public void validTest(
+            @Range(min = 1, max = 9, message = "年龄只能在1-9岁") int age,
+            @NotBlank(message = "不能为空") @RequestBody UserDTO userDTO,
+            @ModelAttribute @Valid PhoneDTO phoneDTO
+            ) {
+        System.out.println(age);
+    }
 }

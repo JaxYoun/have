@@ -3,6 +3,7 @@ package com.youn.have.dto;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import java.util.Set;
 @Setter
 public class UserDTO {
 
+    @NotBlank
     private Integer id;
 
     private String name;
