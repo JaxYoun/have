@@ -1,0 +1,265 @@
+package com.youn.have.controller.payment.wexin;
+
+import lombok.extern.slf4j.Slf4j;
+
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.*;
+
+/**
+ * @Author：YangJx
+ * @Description：考自博客园demo
+ * @DateTime：2017/11/30 22:47
+ */
+@Slf4j
+public class CopyFromCnblog {
+
+    public String getImageUrl(String body, String out_trade_no, String product_id, String total_fee) throws Exception {
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("appid", data.getAppid()); //appid：每个公众号都有一个appid
+        paramMap.put("body", body); //商品描述
+        paramMap.put("mch_id", data.getMch_id()); //商户号：开通微信支付后分配
+        paramMap.put("nonce_str", getRandomStringByLength(32));  // 随机字符串
+        paramMap.put("notify_url", data.getNotify_url()); //支付成功后，回调地址
+        paramMap.put("out_trade_no", out_trade_no);  //商户订单号
+        paramMap.put("product_id", product_id); // 商户根据自己业务传递的参数 当trade_type=NATIVE时必填
+        paramMap.put("spbill_create_ip", this.localIp()); //本机的Ip
+        paramMap.put("total_fee", total_fee); //金额必须为整数  单位为分
+        paramMap.put("trade_type", data.getTrade_type()); //交易类型
+        paramMap.put("sign", getSign(paramMap, WXPayAction.KEY));//根据微信签名规则，生成签名。随机参数可以在商户后台管理系统中进行设置。
+
+        String xmlData = XmlUtils.map2xmlBody(paramMap, "xml");//把参数转换成XML数据格式
+        String codeUrl = getCodeUrl(xmlData);   //获取二维码链接
+        return codeUrl;
+    }
+
+    public static String getSign(Map map, String key) throws Exception {
+        String signTemp = "appid=" + map.get("appid") + "&body="
+                + map.get("body") + "&mch_id=" + map.get("mch_id")
+                + "&nonce_str=" + map.get("nonce_str") + "&notify_url="
+                + map.get("notify_url") + "&out_trade_no="
+                + map.get("out_trade_no") + "&product_id="
+                + map.get("product_id") + "&spbill_create_ip="
+                + map.get("spbill_create_ip") + "&total_fee="
+                + map.get("total_fee") + "&trade_type=" + map.get("trade_type")
+                + "&key=" + key;
+        String sign = MD5.MD5Encode(signTemp).toUpperCase();//MD5微信接口中提供，直接调用即可
+        return sign;
+    }
+
+    public static String map2xmlBody(Map<String, Object> vo, String rootElement) {
+        org.dom4j.Document doc = DocumentHelper.createDocument();
+        Element body = DocumentHelper.createElement(rootElement);
+        doc.add(body);
+        __buildMap2xmlBody(body, vo);
+        return doc.asXML();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void __buildMap2xmlBody(Element body, Map<String, Object> vo) {
+        if (vo != null) {
+            Iterator<String> it = vo.keySet().iterator();
+            while (it.hasNext()) {
+                String key = (String) it.next();
+                if (StringUtil.isNotEmpty(key)) {
+                    Object obj = vo.get(key);
+                    Element element = DocumentHelper.createElement(key);
+                    if (obj != null) {
+                        if (obj instanceof java.lang.String) {
+                            element.setText((String) obj);
+                        } else {
+                            if (obj instanceof java.lang.Character || obj instanceof java.lang.Boolean || obj instanceof java.lang.Number
+                                    || obj instanceof java.math.BigInteger || obj instanceof java.math.BigDecimal) {
+                                org.dom4j.Attribute attr = DocumentHelper.createAttribute(element, "type", obj.getClass().getCanonicalName());
+                                element.add(attr);
+                                element.setText(String.valueOf(obj));
+                            } else if (obj instanceof java.util.Map) {
+                                org.dom4j.Attribute attr = DocumentHelper.createAttribute(element, "type", java.util.Map.class.getCanonicalName());
+                                element.add(attr);
+                                __buildMap2xmlBody(element, (Map<String, Object>) obj);
+                            } else {
+                            }
+                        }
+                    }
+                    body.add(element);
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取一定长度的随机字符串
+     *
+     * @param length 指定字符串长度
+     * @return 一定长度的字符串
+     */
+    public static String getRandomStringByLength(int length) {
+        String base = "abcdefghijklmnopqrstuvwxyz0123456789";
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            int number = random.nextInt(base.length());
+            sb.append(base.charAt(number));
+        }
+        return sb.toString();
+    }
+
+    //获取本机ip地址
+    @SuppressWarnings("rawtypes")
+    private String localIp() {
+        String ip = null;
+        Enumeration allNetInterfaces;
+        try {
+            allNetInterfaces = NetworkInterface.getNetworkInterfaces();
+            while (allNetInterfaces.hasMoreElements()) {
+                NetworkInterface netInterface = (NetworkInterface) allNetInterfaces.nextElement();
+                List<InterfaceAddress> InterfaceAddress = netInterface.getInterfaceAddresses();
+                for (InterfaceAddress add : InterfaceAddress) {
+                    InetAddress Ip = add.getAddress();
+                    if (Ip != null && Ip instanceof Inet4Address) {
+                        ip = Ip.getHostAddress();
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            log.warn("获取本机Ip失败:异常信息:" + e.getMessage());
+        }
+        return ip;
+    }
+// 2.接受微信返回的url-----------------------------------------------------------------------------
+
+    /**
+     * 获取二维码链接
+     *
+     * @param xmlData
+     * @return
+     */
+    private String getCodeUrl(String xmlData) {
+        String resXml = null;
+        try {
+            resXml = WxzfUtil.sendPost(WXPayAction.WX_CREATE_ORDER_URL, xmlData);
+        } catch (UnrecoverableKeyException e1) {
+            log.error(e1.getMessage());
+        } catch (KeyManagementException e1) {
+            log.error(e1.getMessage());
+        } catch (KeyStoreException e1) {
+            log.error(e1.getMessage());
+        } catch (NoSuchAlgorithmException e1) {
+            log.error(e1.getMessage());
+        } catch (IOException e1) {
+            log.error(e1.getMessage());
+        }
+
+        String code_url = "";
+        Map<String, String> map;
+        try {
+            map = WxzfUtil.parseXml(resXml);
+            Object returnCode = map.get("return_code");
+            if ("SUCCESS".equals(returnCode)) {
+                Object resultCode = map.get("result_code");
+                if ("SUCCESS".equals(resultCode)) {
+                    code_url = map.get("code_url").toString();
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return "";
+        }
+        return code_url;
+    }
+
+    //将xml数据发送给微信
+    @SuppressWarnings({"resource"})
+    public static String sendPost(String url, String postDataXML)
+            throws IOException, KeyStoreException, UnrecoverableKeyException,
+            NoSuchAlgorithmException, KeyManagementException {
+
+        String result = null;
+
+        HttpPost httpPost = new HttpPost(url);
+        HttpClient client = new DefaultHttpClient();
+
+        // 得指明使用UTF-8编码，否则到API服务器XML的中文不能被成功识别
+
+        StringEntity postEntity = new StringEntity(postDataXML, "UTF-8");
+
+        httpPost.addHeader("Content-Type", "text/xml");
+
+        httpPost.setEntity(postEntity);
+
+        try {
+
+            HttpResponse response = client.execute(httpPost);
+
+            HttpEntity entity = response.getEntity();
+
+            result = EntityUtils.toString(entity, "UTF-8");
+
+        } catch (ConnectionPoolTimeoutException e) {
+
+            // LOG.debug("http get throw ConnectionPoolTimeoutException(wait time out)");
+
+        } catch (ConnectTimeoutException e) {
+
+            // LOG.debug("http get throw ConnectTimeoutException");
+
+        } catch (SocketTimeoutException e) {
+
+            // LOG.debug("http get throw SocketTimeoutException");
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            // LOG.debug("http get throw Exception" );
+
+        } finally {
+            httpPost.abort();
+        }
+
+        System.out.println(result);
+
+        return result;
+
+    }
+
+// 3.将url转为二维码显示到页面上-----------------------------------------------------
+
+    public String payWeChat(String ids, String content, HttpServletResponse response, HttpServletRequest request, ModelMap model) {
+        WebErrors errors = WebErrors.create(request);
+        try {
+            OmShopOrder order = orderService.findById(Long.parseLong(ids));
+            content = this.getImageUrl(order.getSoProductname(), order.getSoId().toString(), order.getSoId().toString(), (int) (order.getSoTotal() * 10 * 10) + "");
+            MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+            Hashtable hints = new Hashtable();
+            hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+            BitMatrix bitMatrix = multiFormatWriter.encode(content, BarcodeFormat.QR_CODE, 400, 400, hints);
+            response.setContentType("image/jpeg");
+            MatrixToImageWriter.writeToStream(bitMatrix, "jpg", response.getOutputStream());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.warn("订单已支付，请勿重新支付");
+        }
+        return null;
+    }
+
+// 4.扫码支付------------------------------------------------------
+// 5.接收微信的异步通知，在这步修改订单的状态 伪代码-----------------------------------------------
+    /*if ("SUCCESS".equals(returnMap.get("return_code"))&&"SUCCESS".equals(returnMap.get("result_code"))) {
+        //处理你的业务逻辑代码（修改订单支付状态）
+    }*/
+
+// 6.收到异步通知的同时给微信返回指定数据，告知对方已成功处理异步通知 业务伪代码--------------------------------------------
+    /*response.setContentType("text/plain;charset=UTF-8");
+    PrintWriter writer;
+    try {
+        writer = response.getWriter();
+        writer.write("<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>");
+        writer.flush();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }*/
+
+}

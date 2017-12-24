@@ -7,6 +7,7 @@ import com.youn.have.entity.Employee;
 import com.youn.have.entity.Phone;
 import com.youn.have.entity.User;
 import com.youn.have.service.IUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.BeanUtils;
@@ -14,12 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.codec.Base64;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
+@Slf4j
 @Validated
 @RestController
 @RequestMapping("/user")
@@ -109,7 +115,7 @@ public class UserController {
     }
 
     /**
-     * 
+     *
      * @param age
      * @param userDTO
      * @param phoneDTO
@@ -121,5 +127,34 @@ public class UserController {
             @ModelAttribute @Valid PhoneDTO phoneDTO
             ) {
         System.out.println(age);
+    }
+
+    @PostMapping("/transImageToBase64")
+    public String transImageToBase64(@RequestParam("multipartFile") MultipartFile multipartFile) {
+        InputStream inputStream = null;
+        byte[] byteArr = null;
+
+        if(multipartFile != null) {
+            System.out.println(multipartFile.getSize());
+            if((multipartFile.getSize() / 1024) > 3) {
+            }
+        }
+
+        try {
+            inputStream = multipartFile.getInputStream();
+            byteArr = new byte[inputStream.available()];
+            inputStream.read(byteArr);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        } finally {
+            if(inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
+        return new String(Base64.encode(byteArr));
     }
 }

@@ -73,7 +73,7 @@ security:
     name: 1
     password: 1
 
-#远程管理
+#ａｃｔｕａｔｏｒ远程管理
 management:
   address: 127.0.0.1
   port: 9090

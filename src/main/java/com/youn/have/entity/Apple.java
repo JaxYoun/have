@@ -6,6 +6,9 @@ import com.youn.have.mapper.AppleMapper;
 import com.youn.have.vo.AppleVO;
 import lombok.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Data
 @Getter
 @Setter
@@ -50,10 +53,47 @@ class MyUtil {
         System.out.println(AppleColor.valueOf("RED"));
     }
 
+    public static void dtoToEntityTest() {
+
+        AppleDTO appleDTO = new AppleDTO();
+        appleDTO.setAppleColor("RED");
+        appleDTO.setId("222");
+        appleDTO.setName("kkkk");
+        appleDTO.setNumber(345);
+
+        Apple apple = AppleMapper.INSTANCE.dtoToEntity(appleDTO);
+        System.out.println(apple.getAppleColor().getName());
+        System.out.println(apple.getName());
+
+    }
+
+    public static void mapToEntityTest() {
+
+        /*AppleDTO appleDTO = new AppleDTO();
+        appleDTO.setAppleColor("RED");
+        appleDTO.setId("222");
+        appleDTO.setName("kkkk");
+        appleDTO.setNumber(345);*/
+
+        Map<String, Object> appleMap = new HashMap<>();
+        appleMap.put("id", "23");
+        appleMap.put("name", "jjj");
+        appleMap.put("number", "2222");
+        appleMap.put("appleColor", "RED");
+
+
+        Apple apple = AppleMapper.INSTANCE.mapToEntity(appleMap);
+        System.out.println(apple.getAppleColor().getName());
+        System.out.println(apple.getName());
+
+    }
+
     public static void main(String[] args) {
 //        mapperToDTO();
 //        enumTest();
-        mapperToVO();
+//        mapperToVO();
+//        dtoToEntityTest();
+        mapToEntityTest();
     }
 
 }
